@@ -1,0 +1,54 @@
+# =============================================================================
+# MuseAI-Bridge (.gitignore) — Protección estricta para repositorio público
+# =============================================================================
+
+# Secretos, variables de entorno y tokens (NUNCA subir)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*secret*
+*token*
+muse_conexion_qr.png
+
+# Archivos de estado local, permisos del usuario y bitácoras (logs)
+*.log
+audit.log
+server.log
+desktop_crash.log
+health_state.json
+permissions.json
+
+# Entornos virtuales de Python
+venv/
+.venv/
+env/
+ENV/
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Binarios compilados, instaladores y artefactos de PyInstaller
+dist/
+build/
+*.spec
+*.exe
+*.msi
+
+# Bases de datos y respaldos locales
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+*.tmp
+
+# Configuración del sistema operativo / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
