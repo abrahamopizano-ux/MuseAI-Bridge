@@ -59,7 +59,7 @@ MuseBridge está diseñado bajo el principio de **confianza cero y control físi
 ### Opción A: Instalación con el Asistente Gráfico de Windows (Recomendado)
 1. Clona o descarga este repositorio:
    ```powershell
-   git clone https://github.com/abraham/MuseAI-Bridge.git
+   git clone https://github.com/abrahamopizano-ux/MuseAI-Bridge.git
    cd MuseAI-Bridge
    ```
 2. Ejecuta el asistente de instalación de 5 pasos:
