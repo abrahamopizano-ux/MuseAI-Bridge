@@ -24,6 +24,7 @@ import subprocess
 import sys
 import threading
 import time
+import webbrowser
 import winreg
 from pathlib import Path
 from typing import Dict, Any
@@ -553,21 +554,25 @@ class WizardInstallerApp:
         self.root.geometry("780x540")
         self.root.resizable(False, False)
 
-        # Paleta Moderna MuseBridge
-        self.c_bg = "#F7F4EF"
-        self.c_surface = "#FFFFFF"
-        self.c_surface2 = "#F0EDE6"
-        self.c_navy = "#0D1F3C"
-        self.c_navy_hover = "#1A3560"
-        self.c_navy_light = "#EEF2F8"
-        self.c_green = "#2D6A1F"
-        self.c_green_light = "#EAF4E0"
-        self.c_amber = "#D4820A"
-        self.c_amber_light = "#FEF3E0"
-        self.c_text = "#1A1A18"
-        self.c_text2 = "#5A5A54"
-        self.c_text3 = "#9A9A90"
-        self.c_border = "#E2DDD4"
+        # Paleta Moderna MuseBridge (Estilo Oscuro Carbon a juego con el panel)
+        self.c_bg = "#0B0D11"
+        self.c_surface = "#131720"
+        self.c_surface2 = "#1B202C"
+        self.c_surface2_hover = "#242B3A"
+        self.c_sidebar = "#0E1117"
+        self.c_navy = "#2563EB"
+        self.c_navy_hover = "#3B82F6"
+        self.c_navy_light = "#142242"
+        self.c_green = "#10B981"
+        self.c_green_hover = "#059669"
+        self.c_green_light = "#0E2922"
+        self.c_amber = "#F59E0B"
+        self.c_amber_light = "#2C2110"
+        self.c_text = "#F3F4F6"
+        self.c_text2 = "#9CA3AF"
+        self.c_text3 = "#6B7280"
+        self.c_border = "#222734"
+        self.c_border_hover = "#384156"
 
         self.root.configure(bg=self.c_bg)
 
@@ -605,6 +610,7 @@ class WizardInstallerApp:
             "Wizard.Horizontal.TProgressbar",
             background=self.c_navy,
             troughcolor=self.c_surface2,
+            bordercolor=self.c_border,
             borderwidth=0,
             thickness=14
         )
@@ -614,18 +620,21 @@ class WizardInstallerApp:
         main_wrap.pack(fill="both", expand=True)
 
         # Barra lateral izquierda con los 5 pasos del asistente
-        self.sidebar = tk.Frame(main_wrap, bg=self.c_navy, width=220)
+        self.sidebar = tk.Frame(main_wrap, bg=self.c_sidebar, width=220)
         self.sidebar.pack(side="left", fill="y")
         self.sidebar.pack_propagate(False)
 
-        brand = tk.Frame(self.sidebar, bg=self.c_navy, padx=20, pady=24)
+        # Divisor vertical entre barra lateral y área de contenido
+        tk.Frame(main_wrap, bg=self.c_border, width=1).pack(side="left", fill="y")
+
+        brand = tk.Frame(self.sidebar, bg=self.c_sidebar, padx=20, pady=24)
         brand.pack(fill="x")
-        tk.Label(brand, text="MuseBridge", font=("Georgia", 20), bg=self.c_navy, fg="#FFFFFF").pack(anchor="w")
-        tk.Label(brand, text=f"INSTALADOR · v{BRIDGE_VERSION}", font=("Segoe UI", 8, "bold"), bg=self.c_navy, fg="#8798B4").pack(anchor="w", pady=(3, 0))
+        tk.Label(brand, text="MuseBridge", font=("Segoe UI Semibold", 18), bg=self.c_sidebar, fg="#FFFFFF").pack(anchor="w")
+        tk.Label(brand, text=f"INSTALADOR · v{BRIDGE_VERSION}", font=("Segoe UI Semibold", 8), bg=self.c_sidebar, fg=self.c_text3).pack(anchor="w", pady=(3, 0))
 
-        tk.Frame(self.sidebar, bg="#223656", height=1).pack(fill="x", pady=(0, 14))
+        tk.Frame(self.sidebar, bg=self.c_border, height=1).pack(fill="x", pady=(0, 14))
 
-        steps_box = tk.Frame(self.sidebar, bg=self.c_navy, padx=14)
+        steps_box = tk.Frame(self.sidebar, bg=self.c_sidebar, padx=14)
         steps_box.pack(fill="x")
 
         step_titles = [
@@ -640,8 +649,8 @@ class WizardInstallerApp:
                 steps_box,
                 text=f"  {s_txt}",
                 font=("Segoe UI", 10),
-                bg=self.c_navy,
-                fg="#8798B4",
+                bg=self.c_sidebar,
+                fg=self.c_text2,
                 anchor="w",
                 padx=10,
                 pady=9
@@ -649,14 +658,14 @@ class WizardInstallerApp:
             lbl.pack(fill="x", pady=2)
             self.step_labels[s_num] = lbl
 
-        footer_side = tk.Frame(self.sidebar, bg=self.c_navy, padx=20, pady=16)
+        footer_side = tk.Frame(self.sidebar, bg=self.c_sidebar, padx=20, pady=16)
         footer_side.pack(side="bottom", fill="x")
         tk.Label(
             footer_side,
             text="Muse AI · PC Bridge\nAsistente de Windows",
             font=("Segoe UI", 8),
-            bg=self.c_navy,
-            fg="#6E81A0",
+            bg=self.c_sidebar,
+            fg=self.c_text3,
             justify="left"
         ).pack(anchor="w")
 
@@ -677,8 +686,11 @@ class WizardInstallerApp:
             command=self.on_cancel,
             bg=self.c_surface2,
             fg=self.c_text,
-            font=("Segoe UI", 10),
+            activebackground=self.c_surface2_hover,
+            activeforeground=self.c_text,
+            font=("Segoe UI Semibold", 9),
             relief="flat",
+            bd=0,
             padx=16,
             pady=7,
             cursor="hand2"
@@ -693,8 +705,9 @@ class WizardInstallerApp:
             fg="#FFFFFF",
             activebackground=self.c_navy_hover,
             activeforeground="#FFFFFF",
-            font=("Segoe UI", 10, "bold"),
+            font=("Segoe UI Semibold", 9),
             relief="flat",
+            bd=0,
             padx=22,
             pady=7,
             cursor="hand2"
@@ -707,8 +720,11 @@ class WizardInstallerApp:
             command=self.go_back,
             bg=self.c_surface2,
             fg=self.c_text,
-            font=("Segoe UI", 10),
+            activebackground=self.c_surface2_hover,
+            activeforeground=self.c_text,
+            font=("Segoe UI Semibold", 9),
             relief="flat",
+            bd=0,
             padx=16,
             pady=7,
             cursor="hand2"
@@ -727,22 +743,22 @@ class WizardInstallerApp:
             if s_num < self.current_step:
                 lbl.config(
                     text=f"  ✔  {s_num}. {step_names[s_num]}",
-                    bg=self.c_navy,
-                    fg="#69D28C",
-                    font=("Segoe UI", 10, "bold")
+                    bg=self.c_sidebar,
+                    fg=self.c_green,
+                    font=("Segoe UI Semibold", 10)
                 )
             elif s_num == self.current_step:
                 lbl.config(
                     text=f"  ●  {s_num}. {step_names[s_num]}",
-                    bg=self.c_navy_hover,
+                    bg=self.c_surface,
                     fg="#FFFFFF",
-                    font=("Segoe UI", 10, "bold")
+                    font=("Segoe UI Semibold", 10)
                 )
             else:
                 lbl.config(
                     text=f"     {s_num}. {step_names[s_num]}",
-                    bg=self.c_navy,
-                    fg="#8798B4",
+                    bg=self.c_sidebar,
+                    fg=self.c_text3,
                     font=("Segoe UI", 10)
                 )
 
@@ -775,18 +791,18 @@ class WizardInstallerApp:
         tk.Label(
             self.page_container,
             text="Bienvenido al Asistente de Instalación de MuseBridge",
-            font=("Georgia", 16),
+            font=("Segoe UI Semibold", 15),
             bg=self.c_bg,
             fg=self.c_text
-        ).pack(anchor="w", pady=(0, 6))
+        ).pack(anchor="w", pady=(0, 4))
 
         tk.Label(
             self.page_container,
             text=f"Este asistente instalará MuseBridge v{BRIDGE_VERSION} (Servidor Puente y Centro de Control) en tu equipo.",
-            font=("Segoe UI", 10),
+            font=("Segoe UI", 9),
             bg=self.c_bg,
             fg=self.c_text2
-        ).pack(anchor="w", pady=(0, 14))
+        ).pack(anchor="w", pady=(0, 12))
 
         card = tk.Frame(self.page_container, bg=self.c_surface, highlightbackground=self.c_border, highlightthickness=1, padx=20, pady=16)
         card.pack(fill="both", expand=True)
@@ -794,52 +810,74 @@ class WizardInstallerApp:
         tk.Label(
             card,
             text="¿Qué incluye esta instalación?",
-            font=("Georgia", 12),
+            font=("Segoe UI Semibold", 11),
             bg=self.c_surface,
-            fg=self.c_navy
-        ).pack(anchor="w", pady=(0, 8))
+            fg=self.c_text
+        ).pack(anchor="w", pady=(0, 6))
 
         bullets = (
-            "• Panel Visual (MuseBridge Centro de Control) con Modo Claro/Oscuro y código QR.\n"
+            "• Panel de Control de Escritorio responsive con Modo Claro y Oscuro, QR y auditoría.\n"
             "• Servidor Puente FastAPI con captura nativa 1920x1080, tipeo Unicode y sandbox de archivos.\n"
-            "• Servicio Vigilante (Watchdog) silencioso que reinicia el puente automáticamente si cae.\n"
-            "• Política de seguridad Denegado por Defecto (permissions.json con todo en false).\n"
+            "• Servicio Vigilante (Watchdog) silencioso que auto-recupera el puente automáticamente.\n"
+            "• Modelo de seguridad Denegado por Defecto (permissions.json con todo en false).\n"
             "• Desinstalador oficial integrado en 'Agregar o quitar programas' de Windows."
         )
-        tk.Label(card, text=bullets, font=("Segoe UI", 9), bg=self.c_surface, fg=self.c_text2, justify="left").pack(anchor="w", pady=(0, 14))
+        tk.Label(card, text=bullets, font=("Segoe UI", 9), bg=self.c_surface, fg=self.c_text2, justify="left").pack(anchor="w", pady=(0, 12))
 
-        # Cuadro de verificación de Tailscale
+        # Cuadro de verificación de Tailscale con botón directo de descarga
         ts_ok = self.tailscale_info["installed"]
         ts_bg = self.c_green_light if ts_ok else self.c_amber_light
-        ts_fg = self.c_green if ts_ok else self.c_amber
-        ts_box = tk.Frame(card, bg=ts_bg, highlightbackground=ts_fg, highlightthickness=1, padx=14, pady=10)
-        ts_box.pack(fill="x", pady=(4, 0))
+        ts_border = self.c_green if ts_ok else self.c_amber
+        ts_fg = "#10B981" if ts_ok else "#F59E0B"
+        ts_box = tk.Frame(card, bg=ts_bg, highlightbackground=ts_border, highlightthickness=1, padx=14, pady=10)
+        ts_box.pack(fill="x", pady=(2, 0))
+
+        ts_header_row = tk.Frame(ts_box, bg=ts_bg)
+        ts_header_row.pack(fill="x")
 
         tk.Label(
-            ts_box,
+            ts_header_row,
             text="Comprobación de Red Tailscale:",
-            font=("Segoe UI", 9, "bold"),
+            font=("Segoe UI Semibold", 9),
             bg=ts_bg,
             fg=ts_fg
-        ).pack(anchor="w")
+        ).pack(side="left")
+
+        # Botón para descargar Tailscale
+        btn_dl_tailscale = tk.Button(
+            ts_header_row,
+            text="🌐  Descargar Tailscale Gratis",
+            command=lambda: webbrowser.open("https://tailscale.com/download/windows"),
+            bg=self.c_navy,
+            fg="#FFFFFF",
+            activebackground=self.c_navy_hover,
+            activeforeground="#FFFFFF",
+            font=("Segoe UI Semibold", 8),
+            relief="flat",
+            bd=0,
+            padx=10,
+            pady=3,
+            cursor="hand2"
+        )
+        btn_dl_tailscale.pack(side="right")
 
         tk.Label(
             ts_box,
             text=self.tailscale_info["message"],
             font=("Segoe UI", 8),
             bg=ts_bg,
-            fg=ts_fg,
+            fg=self.c_text,
             justify="left",
             wraplength=460
-        ).pack(anchor="w", pady=(2, 0))
+        ).pack(anchor="w", pady=(4, 0))
 
         tk.Label(
             self.page_container,
             text="Haz clic en 'Siguiente >' para continuar.",
-            font=("Segoe UI", 9),
+            font=("Segoe UI", 8),
             bg=self.c_bg,
             fg=self.c_text3
-        ).pack(anchor="w", pady=(10, 0))
+        ).pack(anchor="w", pady=(8, 0))
 
     # -------------------------------------------------------------------------
     # PASO 2: PÁGINA DE ACCESOS DIRECTOS
@@ -851,73 +889,75 @@ class WizardInstallerApp:
         tk.Label(
             self.page_container,
             text="Configuración de Accesos Directos",
-            font=("Georgia", 16),
+            font=("Segoe UI Semibold", 15),
             bg=self.c_bg,
             fg=self.c_text
-        ).pack(anchor="w", pady=(0, 6))
+        ).pack(anchor="w", pady=(0, 4))
 
         tk.Label(
             self.page_container,
             text="Elige los accesos directos que deseas crear para abrir el Panel de Control de MuseBridge.",
-            font=("Segoe UI", 10),
+            font=("Segoe UI", 9),
             bg=self.c_bg,
             fg=self.c_text2
-        ).pack(anchor="w", pady=(0, 14))
+        ).pack(anchor="w", pady=(0, 12))
 
-        card = tk.Frame(self.page_container, bg=self.c_surface, highlightbackground=self.c_border, highlightthickness=1, padx=22, pady=20)
+        card = tk.Frame(self.page_container, bg=self.c_surface, highlightbackground=self.c_border, highlightthickness=1, padx=22, pady=18)
         card.pack(fill="both", expand=True)
 
-        cb1_box = tk.Frame(card, bg=self.c_bg, highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
-        cb1_box.pack(fill="x", pady=(0, 12))
+        cb1_box = tk.Frame(card, bg=self.c_surface2, highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
+        cb1_box.pack(fill="x", pady=(0, 10))
         tk.Checkbutton(
             cb1_box,
             text="🖥️   Crear icono en el escritorio",
             variable=self.var_shortcut_desktop,
-            bg=self.c_bg,
+            bg=self.c_surface2,
             fg=self.c_text,
             selectcolor=self.c_surface,
-            activebackground=self.c_bg,
-            font=("Segoe UI", 10, "bold"),
+            activebackground=self.c_surface2,
+            activeforeground=self.c_text,
+            font=("Segoe UI Semibold", 10),
             cursor="hand2"
         ).pack(anchor="w")
         tk.Label(
             cb1_box,
-            text="Crea el acceso 'Muse AI Bridge' en tu Escritorio con el icono oficial (.ico) para abrir el Panel Visual.",
+            text="Crea el acceso directo 'Muse AI Bridge' en tu Escritorio con icono oficial (.ico) para abrir el Panel Visual.",
             font=("Segoe UI", 8),
-            bg=self.c_bg,
+            bg=self.c_surface2,
             fg=self.c_text2
         ).pack(anchor="w", padx=(26, 0))
 
-        cb2_box = tk.Frame(card, bg=self.c_bg, highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
-        cb2_box.pack(fill="x", pady=(0, 14))
+        cb2_box = tk.Frame(card, bg=self.c_surface2, highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
+        cb2_box.pack(fill="x", pady=(0, 12))
         tk.Checkbutton(
             cb2_box,
-            text="📌   Anclar a la barra de tareas",
+            text="📌   Anclar a la barra de tareas y Menú Inicio",
             variable=self.var_shortcut_taskbar,
-            bg=self.c_bg,
+            bg=self.c_surface2,
             fg=self.c_text,
             selectcolor=self.c_surface,
-            activebackground=self.c_bg,
-            font=("Segoe UI", 10, "bold"),
+            activebackground=self.c_surface2,
+            activeforeground=self.c_text,
+            font=("Segoe UI Semibold", 10),
             cursor="hand2"
         ).pack(anchor="w")
         tk.Label(
             cb2_box,
             text="Agrega el acceso directo de MuseBridge en la barra de tareas y en el Menú Inicio de Windows.",
             font=("Segoe UI", 8),
-            bg=self.c_bg,
+            bg=self.c_surface2,
             fg=self.c_text2
         ).pack(anchor="w", padx=(26, 0))
 
-        note = tk.Frame(card, bg=self.c_navy_light, padx=12, pady=10)
+        note = tk.Frame(card, bg=self.c_navy_light, highlightbackground=self.c_navy, highlightthickness=1, padx=12, pady=10)
         note.pack(fill="x")
         tk.Label(
             note,
-            text="ℹ️  Ambos iconos abren directamente el Panel de Control (Dashboard) de MuseBridge,\n"
-                 "    nunca una ventana negra de consola ni el servidor en crudo.",
-            font=("Segoe UI", 8, "bold"),
+            text="ℹ️  Los accesos directos abren directamente el Panel de Control con diseño moderno,\n"
+                 "    garantizando cero ventanas negras de consola.",
+            font=("Segoe UI Semibold", 8),
             bg=self.c_navy_light,
-            fg=self.c_navy,
+            fg="#60A5FA",
             justify="left"
         ).pack(anchor="w")
 
@@ -931,39 +971,40 @@ class WizardInstallerApp:
         tk.Label(
             self.page_container,
             text="Carpeta de Instalación",
-            font=("Georgia", 16),
+            font=("Segoe UI Semibold", 15),
             bg=self.c_bg,
             fg=self.c_text
-        ).pack(anchor="w", pady=(0, 6))
+        ).pack(anchor="w", pady=(0, 4))
 
         tk.Label(
             self.page_container,
             text="Selecciona la carpeta donde se instalará MuseBridge v2.1.0.",
-            font=("Segoe UI", 10),
+            font=("Segoe UI", 9),
             bg=self.c_bg,
             fg=self.c_text2
-        ).pack(anchor="w", pady=(0, 14))
+        ).pack(anchor="w", pady=(0, 12))
 
-        card = tk.Frame(self.page_container, bg=self.c_surface, highlightbackground=self.c_border, highlightthickness=1, padx=22, pady=20)
+        card = tk.Frame(self.page_container, bg=self.c_surface, highlightbackground=self.c_border, highlightthickness=1, padx=22, pady=18)
         card.pack(fill="both", expand=True)
 
         tk.Label(
             card,
             text="Carpeta de destino (por defecto %LOCALAPPDATA%\\MuseAI-Bridge):",
-            font=("Segoe UI", 9, "bold"),
+            font=("Segoe UI Semibold", 9),
             bg=self.c_surface,
             fg=self.c_text
         ).pack(anchor="w", pady=(0, 8))
 
         path_row = tk.Frame(card, bg=self.c_surface)
-        path_row.pack(fill="x", pady=(0, 16))
+        path_row.pack(fill="x", pady=(0, 14))
 
         self.entry_dir = tk.Entry(
             path_row,
             textvariable=self.var_install_dir,
-            font=("Consolas", 10),
-            bg=self.c_bg,
+            font=("Consolas", 9),
+            bg=self.c_surface2,
             fg=self.c_text,
+            insertbackground=self.c_text,
             relief="flat",
             highlightbackground=self.c_border,
             highlightthickness=1
@@ -976,14 +1017,17 @@ class WizardInstallerApp:
             command=self.browse_install_folder,
             bg=self.c_navy,
             fg="#FFFFFF",
-            font=("Segoe UI", 9, "bold"),
+            activebackground=self.c_navy_hover,
+            activeforeground="#FFFFFF",
+            font=("Segoe UI Semibold", 9),
             relief="flat",
+            bd=0,
             padx=14,
             pady=6,
             cursor="hand2"
         ).pack(side="right")
 
-        info_box = tk.Frame(card, bg=self.c_bg, highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
+        info_box = tk.Frame(card, bg=self.c_surface2, highlightbackground=self.c_border, highlightthickness=1, padx=14, pady=12)
         info_box.pack(fill="x")
         tk.Label(
             info_box,
@@ -993,7 +1037,7 @@ class WizardInstallerApp:
                  "• Archivo permissions.json con todos los permisos desactivados (false) por defecto\n"
                  "• Desinstalador oficial (Uninstall-MuseBridge.exe) registrado en Windows",
             font=("Segoe UI", 8),
-            bg=self.c_bg,
+            bg=self.c_surface2,
             fg=self.c_text2,
             justify="left"
         ).pack(anchor="w")
@@ -1017,18 +1061,18 @@ class WizardInstallerApp:
         tk.Label(
             self.page_container,
             text="Instalando MuseBridge v2.1.0",
-            font=("Georgia", 16),
+            font=("Segoe UI Semibold", 15),
             bg=self.c_bg,
             fg=self.c_text
-        ).pack(anchor="w", pady=(0, 6))
+        ).pack(anchor="w", pady=(0, 4))
 
         tk.Label(
             self.page_container,
             text="Por favor espera mientras se copian los archivos y se registra el servicio vigilante...",
-            font=("Segoe UI", 10),
+            font=("Segoe UI", 9),
             bg=self.c_bg,
             fg=self.c_text2
-        ).pack(anchor="w", pady=(0, 14))
+        ).pack(anchor="w", pady=(0, 12))
 
         card = tk.Frame(self.page_container, bg=self.c_surface, highlightbackground=self.c_border, highlightthickness=1, padx=22, pady=18)
         card.pack(fill="both", expand=True)
@@ -1036,9 +1080,9 @@ class WizardInstallerApp:
         self.lbl_prog_status = tk.Label(
             card,
             text="Iniciando instalación...",
-            font=("Segoe UI", 9, "bold"),
+            font=("Segoe UI Semibold", 9),
             bg=self.c_navy_light,
-            fg=self.c_navy,
+            fg="#60A5FA",
             padx=10,
             pady=4
         )
@@ -1056,11 +1100,13 @@ class WizardInstallerApp:
         self.install_log_list = tk.Listbox(
             card,
             font=("Consolas", 8),
-            bg=self.c_bg,
+            bg=self.c_surface2,
             fg=self.c_text,
             relief="flat",
             highlightbackground=self.c_border,
-            highlightthickness=1
+            highlightthickness=1,
+            selectbackground=self.c_navy,
+            selectforeground="#FFFFFF"
         )
         self.install_log_list.pack(fill="both", expand=True)
 
@@ -1100,23 +1146,23 @@ class WizardInstallerApp:
     def build_step_5_finish(self):
         self.btn_back.config(state="disabled")
         self.btn_cancel.config(state="disabled")
-        self.btn_next.config(state="normal", text="Finalizar", bg=self.c_green)
+        self.btn_next.config(state="normal", text="Finalizar", bg=self.c_green, activebackground=self.c_green_hover)
 
         tk.Label(
             self.page_container,
             text="¡Instalación de MuseBridge Completada!",
-            font=("Georgia", 16),
+            font=("Segoe UI Semibold", 15),
             bg=self.c_bg,
             fg=self.c_green
-        ).pack(anchor="w", pady=(0, 6))
+        ).pack(anchor="w", pady=(0, 4))
 
         tk.Label(
             self.page_container,
             text="MuseBridge v2.1.0 quedó instalado y configurado correctamente en tu equipo.",
-            font=("Segoe UI", 10),
+            font=("Segoe UI", 9),
             bg=self.c_bg,
             fg=self.c_text2
-        ).pack(anchor="w", pady=(0, 14))
+        ).pack(anchor="w", pady=(0, 12))
 
         card = tk.Frame(self.page_container, bg=self.c_surface, highlightbackground=self.c_border, highlightthickness=1, padx=22, pady=18)
         card.pack(fill="both", expand=True)
@@ -1150,7 +1196,8 @@ class WizardInstallerApp:
             fg=self.c_green,
             selectcolor=self.c_surface,
             activebackground=self.c_green_light,
-            font=("Segoe UI", 10, "bold"),
+            activeforeground=self.c_green,
+            font=("Segoe UI Semibold", 10),
             cursor="hand2"
         ).pack(anchor="w")
 

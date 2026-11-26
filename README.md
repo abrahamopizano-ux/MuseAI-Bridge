@@ -51,18 +51,35 @@ MuseBridge está diseñado bajo el principio de **confianza cero y control físi
 
 ## Instalación y Uso
 
+### 🚀 Descarga Rápida (Recomendado para Usuarios)
+
+No necesitas descargar el repositorio `.zip` ni clonar el código para usar MuseBridge. Puedes descargar directamente el instalador oficial autónomo en un solo archivo ejecutable:
+
+[![Descargar Instalador](https://img.shields.io/badge/Descargar-Instalador_MuseAI--Bridge.exe-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/abrahamopizano-ux/MuseAI-Bridge/releases/latest/download/Instalador-MuseAI-Bridge.exe)
+
+👉 **[Descargar Instalador-MuseAI-Bridge.exe (v2.1.0)](https://github.com/abrahamopizano-ux/MuseAI-Bridge/releases/latest/download/Instalador-MuseAI-Bridge.exe)**
+
+- **Cero ventanas negras de consola**: Aplicación nativa de Windows (subsystem GUI) sin terminales cmd/conhost en segundo plano.
+- **Diseño moderno integrado**: Interfaz gráfica en Modo Oscuro (*Carbon*) idéntica a la estética del Centro de Control.
+- **Detección y descarga de Tailscale**: Verifica el estado de Tailscale en tu PC y ofrece un botón con enlace directo oficial a `tailscale.com/download/windows`.
+- **Asistente guiado en 5 pasos**: Configura la carpeta (`%LOCALAPPDATA%\MuseAI-Bridge`), crea accesos directos en el Escritorio y Barra de tareas, e inicializa el auto-arranque seguro.
+
+---
+
 ### Requisitos Previos
 - **Windows 10 / 11** (64 bits)
 - **Python 3.11+** instalado en el sistema
-- **[Tailscale para Windows](https://tailscale.com/download/windows)** instalado, con sesión iniciada y **Tailscale Funnel** habilitado en la consola de administración de tu Tailnet.
+- **[Tailscale para Windows](https://tailscale.com/download/windows)** instalado, con sesión iniciada y **Tailscale Funnel** habilitado en la consola de administración de tu Tailnet (el instalador incluye botón de descarga directa).
 
-### Opción A: Instalación con el Asistente Gráfico de Windows (Recomendado)
-1. Clona o descarga este repositorio:
+---
+
+### Opción A: Instalación desde el Código Fuente
+1. Clona este repositorio:
    ```powershell
    git clone https://github.com/abrahamopizano-ux/MuseAI-Bridge.git
    cd MuseAI-Bridge
    ```
-2. Ejecuta el asistente de instalación de 5 pasos:
+2. Ejecuta el asistente de instalación:
    ```powershell
    py installer.py
    ```
